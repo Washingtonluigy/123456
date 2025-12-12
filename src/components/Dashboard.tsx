@@ -28,6 +28,7 @@ import {
 import { TrackingSession } from '../types';
 import { Profile } from '../lib/supabase';
 import { VoucherRedemptionModal } from './VoucherRedemptionModal';
+import { TrackingCreatedModal } from './TrackingCreatedModal';
 
 interface DashboardProps {
   user: Profile | null;
@@ -62,6 +63,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [showVoucherModal, setShowVoucherModal] = useState(false);
   const [showFloatingHelp, setShowFloatingHelp] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successModalData, setSuccessModalData] = useState({ link: '', name: '' });
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const handleCreateSession = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,22 +88,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
       // Mostrar o link de convite
       if (session && session.invite_token) {
         const inviteLink = session.invite_link || `${window.location.origin}?token=${session.invite_token}`;
-        
+
         console.log('Link de convite criado:', inviteLink);
-        
+
         // Copiar link automaticamente para área de transferência
         if (navigator.clipboard) {
           navigator.clipboard.writeText(inviteLink).then(() => {
             console.log('Link copiado para área de transferência');
-            alert(`SISTEMA DE RASTREAMENTO CRIADO!\n\nLink: ${inviteLink}\n\nEnvie este link para ${formData.name}\n\nFunciona em qualquer lugar do mundo!\n\nAssim que a pessoa aceitar, o GPS será ativado automaticamente!`);
+            setLinkCopied(true);
           }).catch(() => {
             console.warn('Falha ao copiar para área de transferência');
-            alert(`SISTEMA DE RASTREAMENTO CRIADO!\n\nLink: ${inviteLink}\n\nEnvie este link para ${formData.name}\n\nFunciona em qualquer lugar do mundo!\n\nAssim que a pessoa aceitar, o GPS será ativado automaticamente!`);
+            setLinkCopied(false);
           });
-        } else {
-          console.warn('Clipboard API não disponível');
-          alert(`SISTEMA DE RASTREAMENTO CRIADO!\n\nLink: ${inviteLink}\n\nEnvie este link para ${formData.name}\n\nFunciona em qualquer lugar do mundo!\n\nAssim que a pessoa aceitar, o GPS será ativado automaticamente!`);
         }
+
+        // Mostrar modal de sucesso
+        setSuccessModalData({ link: inviteLink, name: formData.name });
+        setShowSuccessModal(true);
       } else {
         console.error('Session created but no invite token:', session);
         alert('Sessão criada mas houve problema com o link. Tente criar novamente.');
@@ -159,6 +164,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
     const message = encodeURIComponent('Olá! Preciso de ajuda com o VigiaLink - Sistema de Rastreamento GPS');
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const handleCopyLinkFromModal = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(successModalData.link).then(() => {
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 3000);
+      }).catch(() => {
+        console.error('Erro ao copiar link');
+      });
+    }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    setLinkCopied(false);
   };
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -617,6 +638,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
         }}
         currentSessions={currentSessions}
         allowedSessions={allowedSessions}
+      />
+
+      {/* Tracking Created Success Modal */}
+      <TrackingCreatedModal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        inviteLink={successModalData.link}
+        personName={successModalData.name}
+        linkCopied={linkCopied}
+        onCopyLink={handleCopyLinkFromModal}
       />
 
       {/* Floating Help Button */}
