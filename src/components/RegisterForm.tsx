@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Shield, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react';
+import { NotificationModal } from './NotificationModal';
+import { useNotification } from '../hooks/useNotification';
 
 interface RegisterFormProps {
   onRegister: (userData: { name: string; email: string; phone: string; password: string }) => void;
@@ -17,22 +19,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onNaviga
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const {
+    notification,
+    showError,
+    showWarning,
+    closeNotification,
+  } = useNotification();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (isSubmitting) return;
     
     if (formData.password !== formData.confirmPassword) {
-      alert('As senhas não coincidem');
+      showError('As senhas digitadas não são iguais. Por favor, verifique.', 'Senhas não coincidem');
       return;
     }
     if (!formData.acceptedTerms) {
-      alert('É necessário aceitar os termos de uso');
+      showWarning('Para continuar, você precisa aceitar os termos de uso e política de privacidade.', 'Termos de uso');
       return;
     }
-    
+
     if (formData.password.length < 6) {
-      alert('A senha deve ter pelo menos 6 caracteres');
+      showError('Por segurança, a senha deve ter no mínimo 6 caracteres.', 'Senha muito curta');
       return;
     }
     
@@ -209,6 +218,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onNaviga
           </button>
         </div>
       </div>
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
     </div>
   );
 };

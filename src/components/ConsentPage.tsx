@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Shield, MapPin, Clock, User, CheckCircle, XCircle, AlertTriangle, Loader, Mail, UserPlus } from 'lucide-react';
+import { NotificationModal } from './NotificationModal';
+import { useNotification } from '../hooks/useNotification';
 
 interface ConsentPageProps {
   inviteToken: string | null;
@@ -30,6 +32,12 @@ export const ConsentPage: React.FC<ConsentPageProps> = ({
   const [acceptedLocation, setAcceptedLocation] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
   const [acceptError, setAcceptError] = useState<string | null>(null);
+
+  const {
+    notification,
+    showWarning,
+    closeNotification,
+  } = useNotification();
 
   if (loading) {
     return (
@@ -69,7 +77,7 @@ export const ConsentPage: React.FC<ConsentPageProps> = ({
 
   const handleAccept = async () => {
     if (!canAccept) {
-      alert('Por favor, aceite todos os termos antes de continuar.');
+      showWarning('Por favor, aceite todos os termos antes de continuar.', 'Atenção!');
       return;
     }
     
@@ -302,6 +310,15 @@ export const ConsentPage: React.FC<ConsentPageProps> = ({
           </p>
         </div>
       </div>
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
     </div>
   );
 };

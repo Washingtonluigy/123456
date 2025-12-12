@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Zap, MapPin } from 'lucide-react';
 import { useEmergencyAlert } from '../hooks/useEmergencyAlert';
+import { NotificationModal } from './NotificationModal';
+import { useNotification } from '../hooks/useNotification';
 
 interface EmergencyButtonProps {
   sessionId: string;
@@ -15,6 +17,12 @@ export const EmergencyButton: React.FC<EmergencyButtonProps> = ({
 }) => {
   const { sendEmergencyAlert, sending } = useEmergencyAlert();
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const {
+    notification,
+    showError,
+    closeNotification,
+  } = useNotification();
 
   const handleEmergencyClick = () => {
     if (disabled || sending) return;
@@ -48,7 +56,7 @@ export const EmergencyButton: React.FC<EmergencyButtonProps> = ({
       setShowConfirm(false);
     } catch (error) {
       console.error('Erro ao enviar alerta:', error);
-      alert('Erro ao enviar alerta de emergência. Tente novamente.');
+      showError('Não foi possível enviar o alerta de emergência. Por favor, tente novamente.', 'Erro ao enviar alerta');
       setShowConfirm(false);
     }
   };
@@ -142,6 +150,15 @@ export const EmergencyButton: React.FC<EmergencyButtonProps> = ({
           Toque para enviar sua localização
         </div>
       )}
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
     </button>
   );
 };

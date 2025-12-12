@@ -29,6 +29,9 @@ import { TrackingSession } from '../types';
 import { Profile } from '../lib/supabase';
 import { VoucherRedemptionModal } from './VoucherRedemptionModal';
 import { TrackingCreatedModal } from './TrackingCreatedModal';
+import { NotificationModal } from './NotificationModal';
+import { ConfirmModal } from './ConfirmModal';
+import { useNotification } from '../hooks/useNotification';
 
 interface DashboardProps {
   user: Profile | null;
@@ -67,11 +70,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [successModalData, setSuccessModalData] = useState({ link: '', name: '' });
   const [linkCopied, setLinkCopied] = useState(false);
 
+  const {
+    notification,
+    confirm,
+    showSuccess,
+    showError,
+    showWarning,
+    showConfirm,
+    closeNotification,
+    closeConfirm,
+  } = useNotification();
+
   const handleCreateSession = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name.trim()) {
-      alert('Nome é obrigatório');
+      showError('Por favor, preencha o nome da pessoa que você deseja proteger.', 'Nome obrigatório');
       return;
     }
     
@@ -107,7 +121,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         setShowSuccessModal(true);
       } else {
         console.error('Session created but no invite token:', session);
-        alert('Sessão criada mas houve problema com o link. Tente criar novamente.');
+        showError('Sessão criada mas houve problema com o link. Por favor, tente criar novamente.', 'Erro ao gerar link');
       }
     } catch (error) {
       console.error('Error creating session:', error);
@@ -115,11 +129,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
       
       // Check if it's a limit error
       if (errorMessage.includes('Limite de rastreamentos atingido')) {
-        alert(errorMessage);
+        showError(errorMessage, 'Limite Atingido');
         setShowCreateModal(false);
-        setShowVoucherModal(true);
+        setTimeout(() => setShowVoucherModal(true), 500);
       } else {
-        alert(`Erro ao criar sessão: ${errorMessage}`);
+        showError(errorMessage, 'Erro ao criar sessão');
       }
     } finally {
       setIsCreating(false);
@@ -130,27 +144,33 @@ export const Dashboard: React.FC<DashboardProps> = ({
     if (navigator.clipboard) {
       navigator.clipboard.writeText(link).then(() => {
         console.log('Link copiado:', link);
-        alert('Link copiado!\n\nEnvie para a pessoa que você quer proteger.\n\nO rastreamento GPS será ativado automaticamente quando ela aceitar!');
+        showSuccess('Link copiado com sucesso!\n\nEnvie para a pessoa que você quer proteger.\n\nO rastreamento GPS será ativado automaticamente quando ela aceitar!', 'Link Copiado!');
       }).catch((error) => {
         console.error('Erro ao copiar link:', error);
-        alert(`Link de rastreamento:\n\n${link}\n\nCopie manualmente e envie para a pessoa que você quer proteger.`);
+        showWarning(`Link de rastreamento:\n\n${link}\n\nCopie manualmente e envie para a pessoa que você quer proteger.`, 'Copiar Manualmente');
       });
     } else {
       console.warn('Clipboard API não disponível');
-      alert(`Link de rastreamento:\n\n${link}\n\nCopie manualmente e envie para a pessoa que você quer proteger.`);
+      showWarning(`Link de rastreamento:\n\n${link}\n\nCopie manualmente e envie para a pessoa que você quer proteger.`, 'Copiar Manualmente');
     }
   };
 
   const handleStopTracking = (sessionId: string) => {
-    if (confirm('Tem certeza que deseja PARAR o rastreamento?\n\nIsso interromperá a coleta de localização GPS.\n\nA pessoa não será mais rastreada.')) {
-      onStopTracking?.(sessionId);
-    }
+    showConfirm(
+      'Isso interromperá a coleta de localização GPS.\n\nA pessoa não será mais rastreada.',
+      () => onStopTracking?.(sessionId),
+      'Parar Rastreamento?',
+      'warning'
+    );
   };
 
   const handleDeleteSession = (sessionId: string) => {
-    if (confirm('Tem certeza que deseja EXCLUIR este rastreamento?\n\nTodos os dados de localização serão perdidos PERMANENTEMENTE.\n\nEsta ação NÃO pode ser desfeita!')) {
-      onDeleteSession?.(sessionId);
-    }
+    showConfirm(
+      'Todos os dados de localização serão perdidos PERMANENTEMENTE.\n\nEsta ação NÃO pode ser desfeita!',
+      () => onDeleteSession?.(sessionId),
+      'Excluir Rastreamento?',
+      'danger'
+    );
   };
 
   const handleRefresh = () => {
@@ -648,6 +668,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
         personName={successModalData.name}
         linkCopied={linkCopied}
         onCopyLink={handleCopyLinkFromModal}
+      />
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirm.isOpen}
+        onClose={closeConfirm}
+        onConfirm={confirm.onConfirm}
+        title={confirm.title}
+        message={confirm.message}
+        type={confirm.type}
       />
 
       {/* Floating Help Button */}

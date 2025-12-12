@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { MapPin, Plus, Trash2, Shield, AlertTriangle, Home, School } from 'lucide-react';
 import { useGeofencing, GeofenceZone } from '../hooks/useGeofencing';
+import { NotificationModal } from './NotificationModal';
+import { ConfirmModal } from './ConfirmModal';
+import { useNotification } from '../hooks/useNotification';
 
 interface GeofenceManagerProps {
   sessionId: string;
@@ -21,16 +24,27 @@ export const GeofenceManager: React.FC<GeofenceManagerProps> = ({
     radius: 100
   });
 
+  const {
+    notification,
+    confirm,
+    showError,
+    showWarning,
+    showSuccess,
+    showConfirm,
+    closeNotification,
+    closeConfirm,
+  } = useNotification();
+
   const handleCreateZone = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!currentLocation) {
-      alert('Localização atual não disponível. Ative o GPS primeiro.');
+      showWarning('Para criar uma zona de segurança, você precisa ativar o GPS primeiro.', 'GPS não ativado');
       return;
     }
 
     if (!formData.name.trim()) {
-      alert('Nome da zona é obrigatório');
+      showError('Por favor, insira um nome para a zona de segurança.', 'Nome obrigatório');
       return;
     }
 
@@ -47,24 +61,31 @@ export const GeofenceManager: React.FC<GeofenceManagerProps> = ({
 
       setFormData({ name: '', type: 'safe', radius: 100 });
       setShowCreateForm(false);
-      
+      showSuccess(`Zona "${formData.name}" criada com sucesso!`, 'Zona criada!');
+
       console.log('Zona criada com sucesso');
     } catch (error) {
       console.error('Erro ao criar zona:', error);
-      alert('Erro ao criar zona. Tente novamente.');
+      showError('Não foi possível criar a zona. Por favor, tente novamente.', 'Erro ao criar zona');
     }
   };
 
   const handleDeleteZone = async (zoneId: string, zoneName: string) => {
-    if (confirm(`Excluir Tem certeza que deseja excluir a zona "${zoneName}"?`)) {
-      try {
-        await deleteZone(zoneId);
-        console.log('Zona excluída:', zoneName);
-      } catch (error) {
-        console.error('Erro ao excluir zona:', error);
-        alert('Erro ao excluir zona. Tente novamente.');
-      }
-    }
+    showConfirm(
+      `Tem certeza que deseja excluir a zona "${zoneName}"?\n\nEsta ação não pode ser desfeita.`,
+      async () => {
+        try {
+          await deleteZone(zoneId);
+          showSuccess(`Zona "${zoneName}" foi excluída.`, 'Zona excluída');
+          console.log('Zona excluída:', zoneName);
+        } catch (error) {
+          console.error('Erro ao excluir zona:', error);
+          showError('Não foi possível excluir a zona. Tente novamente.', 'Erro ao excluir');
+        }
+      },
+      'Excluir zona?',
+      'danger'
+    );
   };
 
   const getZoneIcon = (type: string) => {
@@ -278,6 +299,25 @@ export const GeofenceManager: React.FC<GeofenceManagerProps> = ({
           </div>
         </div>
       )}
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirm.isOpen}
+        onClose={closeConfirm}
+        onConfirm={confirm.onConfirm}
+        title={confirm.title}
+        message={confirm.message}
+        type={confirm.type}
+      />
     </div>
   );
 };
