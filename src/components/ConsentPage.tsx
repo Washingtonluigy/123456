@@ -291,7 +291,7 @@ export const ConsentPage: React.FC<ConsentPageProps> = ({
         {/* Informação sobre autenticação */}
         <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 rounded-lg border border-blue-200">
           <p className="text-blue-800 text-xs sm:text-sm text-center">
-            ℹ️ Não é necessário criar conta ou fazer login. O rastreamento funciona de forma anônima e segura.
+            Não é necessário criar conta ou fazer login. O rastreamento funciona de forma anônima e segura.
           </p>
         </div>
 

@@ -180,8 +180,11 @@ function App() {
       // Mark token as accepted
       setAcceptedTokens(prev => new Set([...prev, inviteToken]));
       const result = await acceptInvite(inviteToken);
-      // Force refresh to update all tabs
-      forceRefresh();
+
+      // Force refresh to update all tabs - with delay to ensure database update propagates
+      setTimeout(() => {
+        forceRefresh();
+      }, 500);
 
       // Add success notification instead of alert
       addNotification('success', 'Rastreamento Ativado!', `Proteção ativada com sucesso! Sua localização será compartilhada com segurança.`);

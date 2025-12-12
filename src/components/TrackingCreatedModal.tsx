@@ -22,12 +22,12 @@ export const TrackingCreatedModal: React.FC<TrackingCreatedModalProps> = ({
 
   const shareWhatsApp = () => {
     const message = encodeURIComponent(
-      `🛡️ *VigiaLink - Sistema de Rastreamento GPS*\n\n` +
+      `*VigiaLink - Sistema de Rastreamento GPS*\n\n` +
       `Olá ${personName}!\n\n` +
       `Você foi adicionado(a) ao meu sistema de proteção VigiaLink.\n\n` +
-      `🌍 Funciona em qualquer lugar do mundo\n` +
-      `📍 Rastreamento GPS em tempo real\n` +
-      `🔒 100% Seguro e Privado\n\n` +
+      `Funciona em qualquer lugar do mundo\n` +
+      `Rastreamento GPS em tempo real\n` +
+      `100% Seguro e Privado\n\n` +
       `Para ativar, clique no link abaixo e aceite o convite:\n` +
       `${inviteLink}\n\n` +
       `O GPS será ativado automaticamente após sua aceitação.`
@@ -54,7 +54,7 @@ export const TrackingCreatedModal: React.FC<TrackingCreatedModalProps> = ({
             </div>
 
             <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">
-              🎉 Rastreamento Criado!
+              Rastreamento Criado com Sucesso
             </h2>
 
             <p className="text-center text-gray-700 text-sm">
@@ -71,10 +71,10 @@ export const TrackingCreatedModal: React.FC<TrackingCreatedModalProps> = ({
                     Como funciona:
                   </h3>
                   <ul className="text-xs text-gray-700 space-y-1">
-                    <li>✅ Envie o link para {personName}</li>
-                    <li>✅ Pessoa aceita o convite</li>
-                    <li>✅ GPS ativa automaticamente</li>
-                    <li>✅ Rastreamento 24/7 em tempo real</li>
+                    <li>• Envie o link para {personName}</li>
+                    <li>• Pessoa aceita o convite</li>
+                    <li>• GPS ativa automaticamente</li>
+                    <li>• Rastreamento 24/7 em tempo real</li>
                   </ul>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export const TrackingCreatedModal: React.FC<TrackingCreatedModalProps> = ({
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
               <p className="text-xs text-yellow-800 text-center">
-                <span className="font-bold">🌍 Funciona globalmente!</span> O GPS será ativado assim que {personName} aceitar o convite.
+                <span className="font-bold">Funciona globalmente!</span> O GPS será ativado assim que {personName} aceitar o convite.
               </p>
             </div>
           </div>

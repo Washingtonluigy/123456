@@ -26,7 +26,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { TrackingSession } from '../types';
-import { Profile } from '../lib/supabase';
+import { Profile, appUrl } from '../lib/supabase';
 import { VoucherRedemptionModal } from './VoucherRedemptionModal';
 import { TrackingCreatedModal } from './TrackingCreatedModal';
 import { NotificationModal } from './NotificationModal';
@@ -101,7 +101,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       
       // Mostrar o link de convite
       if (session && session.invite_token) {
-        const inviteLink = session.invite_link || `${window.location.origin}?token=${session.invite_token}`;
+        const inviteLink = session.invite_link || `${appUrl}?token=${session.invite_token}`;
 
         console.log('Link de convite criado:', inviteLink);
 
@@ -491,7 +491,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       </td>
                       <td className="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <button
-                          onClick={() => copyLink(`${window.location.origin}?token=${session.invite_token}`)}
+                          onClick={() => copyLink(`${appUrl}?token=${session.invite_token}`)}
                           className="bg-red-600 text-white px-2 py-1 rounded-lg hover:bg-red-700 transition-colors flex items-center font-bold text-xs w-full sm:w-auto justify-center"
                         >
                           <Satellite className="w-3 h-3 mr-1" />

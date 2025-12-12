@@ -453,7 +453,7 @@ export const GPSMapTracker: React.FC<GPSMapTrackerProps> = ({
                   <div className="flex items-center space-x-2">
                     <div className={`flex items-center text-sm font-bold ${getStatusColor()}`}>
                       <Radio className="w-4 h-4 mr-1" />
-                      {gpsStatus === 'searching' ? '🔍 LOCALIZANDO...' : getStatusText()}
+                      {gpsStatus === 'searching' ? 'LOCALIZANDO...' : getStatusText()}
                     </div>
                   </div>
                 </div>
@@ -472,18 +472,18 @@ export const GPSMapTracker: React.FC<GPSMapTrackerProps> = ({
                         <Satellite className="w-12 h-12 text-gray-500" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-500 mb-2">
-                        {gpsStatus === 'searching' ? '🔍 Localizando...' : '🛰️ Aguardando GPS...'}
+                        {gpsStatus === 'searching' ? 'Localizando...' : 'Aguardando GPS...'}
                       </h3>
                       <p className="text-gray-400 mb-4">
                         {gpsStatus === 'searching' ? 'Obtendo localização atual' : 'Conectando com o dispositivo'}
                       </p>
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-sm mx-auto">
                         <p className="text-yellow-700 text-sm">
-                          {session?.status === 'pending' 
-                            ? '⏳ Aguardando aceitação do convite'
+                          {session?.status === 'pending'
+                            ? 'Aguardando aceitação do convite'
                             : session?.status === 'inactive'
-                            ? 'Inativo Rastreamento inativo'
-                            : '🔍 Buscando primeira localização GPS...'
+                            ? 'Rastreamento inativo'
+                            : 'Buscando primeira localização GPS...'
                           }
                         </p>
                       </div>
@@ -500,7 +500,7 @@ export const GPSMapTracker: React.FC<GPSMapTrackerProps> = ({
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                 <Navigation className="w-5 h-5 mr-2 text-blue-500" />
-                🛰️ Controles GPS
+                Controles GPS
               </h3>
               <div className="space-y-3">
                 <button
@@ -516,7 +516,7 @@ export const GPSMapTracker: React.FC<GPSMapTrackerProps> = ({
                   {isUpdating ? (
                     <>
                       <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      🔍 Atualizando...
+                      Atualizando...
                     </>
                   ) : (
                     <>

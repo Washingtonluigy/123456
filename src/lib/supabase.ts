@@ -2,10 +2,11 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+export const appUrl = import.meta.env.VITE_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
 
-console.log('🔧 Inicializando Supabase...');
-console.log(' URL:', supabaseUrl ? 'Definida' : 'UNDEFINED');
-console.log('🔑 Key:', supabaseAnonKey ? 'Definida' : 'UNDEFINED');
+console.log('Inicializando Supabase...');
+console.log('URL:', supabaseUrl ? 'Definida' : 'UNDEFINED');
+console.log('Key:', supabaseAnonKey ? 'Definida' : 'UNDEFINED');
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Variáveis de ambiente do Supabase não encontradas!');
